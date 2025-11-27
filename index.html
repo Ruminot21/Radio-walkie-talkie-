@@ -3,227 +3,233 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WALKIE TACTICAL PRO</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <title>Walkie-Talkie PRO</title>
   <script src="https://js.pusher.com/8.2/pusher.min.js"></script>
   <style>
-    :root{--green:#00ff41;--red:#ff0033;--dark:#000;}
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--dark);color:var(--green);font-family:'Rajdhani',sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden;
-      background:radial-gradient(circle at center,#001a0a 0%,#000 70%);}
-    #header{font-family:'Orbitron',sans-serif;font-size:42px;font-weight:900;text-align:center;padding:20px 0 10px;
-      text-shadow:0 0 30px var(--green),0 0 60px var(--green);letter-spacing:8px;}
-    .scanline{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(transparent 50%,rgba(0,255,65,0.03)50%);
-      background-size:100% 4px;animation:scan 8s linear infinite;pointer-events:none;}
-    @keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(100%)}}
-    #channelBox{text-align:center;margin:15px 0;}
-    #channelInput{width:140px;height:60px;font-size:36px;text-align:center;background:rgba(0,0,0,0.8);color:var(--green);border:3px solid var(--green);border-radius:12px;
-      box-shadow:0 0 30px rgba(0,255,65,0.6);}
-    #joinBtn{margin-left:15px;padding:15px 30px;font-size:20px;background:linear-gradient(145deg,#003300,#00ff41);color:#000;border:none;border-radius:12px;
-      box-shadow:0 0 30px rgba(0,255,65,0.8);cursor:pointer;}
-    #ptt{width:300px;height:300px;margin:40px auto;border-radius:50%;background:radial-gradient(circle at 30% 30%,#004400,#000811);
-      border:14px solid var(--green);box-shadow:0 0 80px rgba(0,255,65,0.8),inset 0 0 60px rgba(0,0,0,0.9);
-      display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;}
-    #ptt::before{content:'';position:absolute;width:100%;height:100%;background:conic-gradient(from 0deg at 50% 50%,transparent,rgba(0,255,65,0.1)30deg,transparent 60deg);
-      animation:radar 20s linear infinite;opacity:0.3;}
-    @keyframes radar{to{transform:rotate(360deg)}}
-    .talking{background:radial-gradient(circle at 30% 30%,#440000,#110000)!important;border-color:var(--red)!important;
-      box-shadow:0 0 120px #ff0033,0 0 200px #ff0033!important;animation:pulseRed 1s infinite alternate;}
-    @keyframes pulseRed{from{box-shadow:0 0 120px #ff0033}to{box-shadow:0 0 180px #ff0033}}
-    #status{text-align:center;font-size:26px;margin:20px;text-shadow:0 0 20px var(--green);}
-    .indicator{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--green);box-shadow:0 0 20px var(--green);
-      animation:pulse 2s infinite;margin-right:10px;vertical-align:middle;}
-    .tx{background:#ff0033!important;box-shadow:0 0 30px #ff0033!important;animation:pulse 0.5s infinite!important;}
-    @keyframes pulse{0%,100%{opacity:0.6}50%{opacity:1}}
-    #unlock{display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);z-index:9999;
-      color:#0f0;font-size:32px;text-align:center;padding-top:40vh;cursor:pointer;}
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@800&display=swap');
+    
+    body{margin:0;height:100vh;background:#000;color:#0f0;font-family:Arial,Helvetica,sans-serif;display:flex;align-items:center;justify-content:center;
+      background: radial-gradient(circle at center, #003300, #000);}
+    
+    .walkie{width:340px;background:#111;border:10px solid #333;border-radius:30px;padding:20px;box-shadow:0 0 50px rgba(0,255,0,0.4);
+      position:relative;overflow:hidden;}
+    
+    .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;}
+    .led{width:18px;height:18px;background:#300;border-radius:50%;box-shadow:0 0 15px #f00;}
+    .led.on{background:#f00;animation:blink 1s infinite;box-shadow:0 0 30px #f00;}
+    @keyframes blink{0%,100%{opacity:0.7}50%{opacity:1}}
+    
+    h1{font-family:'Orbitron';font-size:28px;margin:0;text-shadow:0 0 15px #0f0;}
+    
+    .display{background:#000;border:4px solid #0f0;padding:15px;border-radius:12px;text-align:center;
+      font-family:'Orbitron';font-size:36px;letter-spacing:5px;margin-bottom:20px;text-shadow:0 0 20px #0f0;}
+    
+    select{background:#000;color:#0f0;border:3px solid #0f0;padding:12px;font-size:20px;border-radius:12px;width:100%;margin-bottom:20px;}
+    
+    .ptt{width:200px;height:200px;margin:30px auto;border-radius:50%;background:radial-gradient(#444,#000);
+      border:15px solid #555;box-shadow:0 0 60px rgba(0,255,0,0.7),inset 0 0 40px #000;
+      display:flex;align-items:center;justify-content:center;text-align:center;font-weight:bold;font-size:20px;color:#0f0;
+      transition:all 0.05s;touch-action:manipulation;}
+    
+    .ptt:active{background:radial-gradient(#f00,#900);transform:scale(0.94);box-shadow:0 0 80px #f00;}
+    
+    .status{text-align:center;font-size:15px;min-height:24px;margin:10px 0;}
+    
+    .speaker{height:70px;background:repeating-linear-gradient(90deg,#222 0px,#222 8px,#333 8px,#333 16px);border-radius:12px;}
+    
+    .signal{width:100%;height:6px;background:#222;border-radius:3px;overflow:hidden;margin-top:10px;}
+    .bar{height:100%;background:#0f0;width:0%;transition:width 0.3s;box-shadow:0 0 10px #0f0;}
   </style>
 </head>
 <body>
 
-  <div id="unlock">TOCA LA PANTALLA PARA ACTIVAR EL MICRÓFONO</div>
-
-  <div class="scanline"></div>
-  <div id="header">TACTICAL COMM</div>
-
-  <div id="channelBox">
-    <label style="font-size:22px;text-shadow:0 0 10px;">FRECUENCIA</label><br>
-    <input type="number" id="channelInput" min="1" max="999" value="13">
-    <button id="joinBtn" onclick="joinChannel()">CONECTAR</button>
+<div class="walkie">
+  <div class="top">
+    <h1>WALKIE PRO</h1>
+    <div class="led" id="led"></div>
   </div>
 
-  <div id="ptt">
-    <div style="font-size:52px;text-shadow:0 0 30px;">PTT</div>
-    <div style="font-size:20px;margin-top:10px;">CANAL <span id="currentChannel">13</span></div>
+  <div class="display" id="display">CH 01</div>
+
+  <select id="channel">
+    <option value="1">CANAL 01 - GENERAL</option>
+    <option value="2">CANAL 02 - SEGURIDAD</option>
+    <option value="3">CANAL 03 - EVENTOS</option>
+    <option value="4">CANAL 04 - AMIGOS</option>
+    <option value="5">CANAL 05 - FIESTA</option>
+    <option value="6">CANAL 06</option>
+    <option value="7">CANAL 07</option>
+    <option value="8">CANAL 08</option>
+    <option value="9">CANAL 09</option>
+    <option value="10">CANAL 10</option>
+  </select>
+
+  <div class="ptt" id="ptt" unselectable="on">
+    MANTÉN<br>PARA HABLAR
   </div>
 
-  <div id="status"><span class="indicator" id="led"></span> ESPERANDO...</div>
+  <div class="status" id="status">Conectado • Listo</div>
+  <div class="signal"><div class="bar" id="signalBar"></div></div>
+  <div class="speaker"></div>
+</div>
 
-  <script>
-    // === PUSHER ===
-    const pusher = new Pusher('fc0eb734d53f2df68607', {
-      cluster: 'us2',
-      forceTLS: true
+<audio id="beepStart" src="https://assets.mixkit.co/sfx/preview/mixkit-walkie-talkie-push-to-talk-1363.mp3" preload="auto"></audio>
+<audio id="beepEnd" src="https://assets.mixkit.co/sfx/preview/mixkit-walkie-talkie-roger-beep-1364.mp3" preload="auto"></audio>
+
+<script>
+  // Configuración ultra óptima
+  const pusher = new Pusher('fc0eb734d53f2df68607', {
+    cluster: 'us2',
+    forceTLS: true,
+    activityTimeout: 30000,
+    pongTimeout: 5000
+  });
+
+  let channel = null;
+  let recorder = null;
+  let audioContext = new (window.AudioContext || window.webkitAudioContext)();
+  let currentChannel = "1";
+  let isTalking = false;
+  let gainNode = audioContext.createGain();
+
+  const display = document.getElementById('display');
+  const status = document.getElementById('status');
+  const led = document.getElementById('led');
+  const ptt = document.getElementById('ptt');
+  const channelSelect = document.getElementById('channel');
+  const signalBar = document.getElementById('signalBar');
+
+  const beepStart = document.getElementById('beepStart');
+  const beepEnd = document.getElementById('beepEnd');
+
+  // Cambiar canal con fluidez
+  channelSelect.addEventListener('change', () => {
+    currentChannel = channelSelect.value;
+    display.textContent = `CH ${currentChannel.padStart(2, "0")}`;
+    subscribe(currentChannel);
+  });
+
+  function subscribe(ch) {
+    if (channel) {
+      channel.unbind_all();
+      pusher.unsubscribe(`walkie-${ch}`);
+    }
+    
+    channel = pusher.subscribe(`walkie-${ch}`);
+    
+    channel.bind('pusher:subscription_succeeded', () => {
+      status.textContent = `Canal \( {ch} • \){channel.members.count} en línea`;
+      signalBar.style.width = '100%';
     });
 
-    let channel = null;
-    let currentNumber = 13;
-    let myId = Math.random().toString(36).substring(7);
-    let talking = false;
-    let audioCtx = null;
-    let stream = null;
-    let workletNode = null;
-
-    // === PRIMER TOQUE OBLIGATORIO (iOS/Android) ===
-    document.getElementById('unlock').addEventListener('touchstart', initAudio, {once: true, passive: false});
-    document.getElementById('unlock').addEventListener('click', initAudio, {once: true});
-
-    async function initAudio(e) {
-      if (e) e.preventDefault();
-      document.getElementById('unlock').style.display = 'none';
-
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') await audioCtx.resume();
-
-      // Cargar AudioWorklet ligero directamente desde Blob
-      await audioCtx.audioWorklet.addModule(URL.createObjectURL(new Blob([`
-        class AudioSender extends AudioWorkletProcessor {
-          process(inputs, outputs, parameters) {
-            const input = inputs[0];
-            if (input && input[0]) {
-              this.port.postMessage(input[0]);
-            }
-            return true;
-          }
-        }
-        registerProcessor('audio-sender', AudioSender);
-      `], {type: 'application/javascript'})));
-
-      joinChannel(); // Conectar al canal por defecto
-    }
-
-    // === CAMBIAR / UNIRSE A CANAL ===
-    function joinChannel() {
-      const num = Math.max(1, Math.min(999, parseInt(document.getElementById('channelInput').value || 13)));
-      currentNumber = num;
-      document.getElementById('currentChannel').innerText = num;
-
-      if (channel) channel.unsubscribe();
-      channel = pusher.subscribe(`walkie-${num}`);
-
-      channel.bind('pusher:subscription_succeeded', () => {
-        document.getElementById('status').innerHTML = `<span class="indicator"></span> CANAL ${num} ● CONECTADO`;
-      });
-
-      channel.bind('client-audio', data => {
-        if (data.id === myId) return;
-        playAudio(data.chunk);
-      });
-    }
-
-    // === PTT 100% FUNCIONAL EN MÓVILES Y PC ===
-    const ptt = document.getElementById('ptt');
-
-    ptt.addEventListener('touchstart', startTalking, {passive: false});
-    ptt.addEventListener('mousedown', startTalking);
-    ptt.addEventListener('touchend', stopTalking);
-    ptt.addEventListener('touchcancel', stopTalking);
-    ptt.addEventListener('mouseup', stopTalking);
-    ptt.addEventListener('mouseleave', stopTalking);
-
-    async function startTalking(e) {
-      e.preventDefault();
-      if (talking || !audioCtx) return;
-
-      talking = true;
-      ptt.classList.add('talking');
-      ptt.innerHTML = `<div style="font-size:48px;">TX</div><div style="font-size:22px;margin-top:10px;">TRANSMITIENDO…</div>`;
-      document.getElementById('status').innerHTML = `<span class="indicator tx"></span> TRANSMITIENDO`;
-
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true
-          }
-        });
-
-        const source = audioCtx.createMediaStreamSource(stream);
-        workletNode = new AudioWorkletNode(audioCtx, 'audio-sender');
-
-        workletNode.port.onmessage = (event) => {
-          if (!talking) return;
-          const float32 = event.data;
-
-          // Convertir a PCM 16-bit
-          const length = float32.length;
-          const int16 = new Int16Array(length);
-          for (let i = 0; i < length; i++) {
-            int16[i] = Math.max(-32768, Math.min(32767, float32[i] * 32768));
-          }
-
-          // Base64 ultra rápido
-          const base64 = btoa(String.fromCharCode(...new Uint8Array(int16.buffer)));
-          channel.trigger('client-audio', { id: myId, chunk: base64 });
-        };
-
-        source.connect(workletNode);
-        workletNode.connect(audioCtx.destination);
-
-      } catch (err) {
-        alert("¡Activa el micrófono en los ajustes del navegador!");
-        stopTalking();
-      }
-    }
-
-    function stopTalking() {
-      if (!talking) return;
-      talking = false;
-
-      ptt.classList.remove('talking');
-      ptt.innerHTML = `<div style="font-size:52px;text-shadow:0 0 30px;">PTT</div><div style="font-size:20px;margin-top:10px;">CANAL ${currentNumber}</div>`;
-      document.getElementById('status').innerHTML = `<span class="indicator"></span> CANAL ${currentNumber} ● ESCUCHANDO`;
-
-      if (workletNode) {
-        workletNode.port.postMessage(null); // opcional
-        workletNode.disconnect();
-      }
-      if (stream) stream.getTracks().forEach(track => track.stop());
-
-      workletNode = stream = null;
-    }
-
-    // === REPRODUCIR AUDIO RECIBIDO ===
-    function playAudio(base64) {
-      try {
-        const binary = atob(base64);
-        const len = binary.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) bytes[i] = binary.charCodeAt(i);
-
-        const pcm16 = new Int16Array(bytes.buffer);
-        const float32 = new Float32Array(pcm16.length);
-        for (let i = 0; i < pcm16.length; i++) {
-          float32[i] = pcm16[i] / 32768;
-        }
-
-        const buffer = audioCtx.createBuffer(1, float32.length, audioCtx.sampleRate);
-        buffer.copyToChannel(float32, 0);
-
-        const source = audioCtx.createBufferSource();
+    // Recepción ultra fluida con AudioContext
+    channel.bind('audio', data => {
+      if (isTalking) return;
+      
+      const binary = atob(data.chunk);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+      
+      audioContext.decodeAudioData(bytes.buffer, buffer => {
+        const source = audioContext.createBufferSource();
         source.buffer = buffer;
-        source.connect(audioCtx.destination);
+        source.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        gainNode.gain.value = 2.5;
         source.start(0);
-      } catch (e) {
-        // Silencio en caso de error (normal si hay mucho tráfico)
-      }
-    }
+        
+        led.classList.add('on');
+        setTimeout(() => led.classList.remove('on'), 150);
+      });
+    });
 
-    // Auto-iniciar en PC si ya tiene permisos (opcional)
-    if (!/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
-      setTimeout(initAudio, 800);
-    }
-  </script>
+    channel.bind('talking', () => {
+      if (!isTalking) {
+        status.textContent = "¡Hablando en el canal!";
+        status.style.color = "#f66";
+        beepStart.play();
+        led.classList.add('on');
+      }
+    });
+
+    channel.bind('stopped', () => {
+      status.textContent = `Canal ${ch} libre`;
+      status.style.color = "#0f0";
+      beepEnd.play();
+      led.classList.remove('on');
+    });
+  }
+
+  // PTT ultra sensible
+  function startTransmit(e) {
+    e.preventDefault();
+    if (isTalking) return;
+
+    navigator.mediaDevices.getUserMedia({ 
+      audio: {
+        sampleRate: 48000,
+        channelCount: 1,
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    }).then(stream => {
+      ptt.innerHTML = "TRANSMITIENDO";
+      ptt.style.background = "radial-gradient(#f00, #900)";
+      status.textContent = "¡Hablando ahora!";
+      status.style.color = "#f00";
+      beepStart.currentTime = 0;
+      beepStart.play();
+
+      channel.trigger('client-talking', {});
+      
+      recorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+
+      recorder.ondataavailable = e => {
+        if (e.data.size > 0) {
+          e.data.arrayBuffer().then(buf => {
+            const base64 = btoa(String.fromCharCode(...new Uint8Array(buf)));
+            channel.trigger('client-audio', { chunk: base64 });
+          });
+        }
+      };
+
+      recorder.start(100); // 100ms = latencia imperceptible
+      isTalking = true;
+    });
+  }
+
+  function stopTransmit(e) {
+    if (e) e.preventDefault();
+    if (!isTalking || !recorder) return;
+
+    recorder.stop();
+    recorder.stream.getTracks().forEach(t => t.stop());
+    recorder = null;
+    isTalking = false;
+
+    ptt.innerHTML = "MANTÉN<br>PARA HABLAR";
+    ptt.style.background = "";
+    channel.trigger('client-stopped', {});
+    status.textContent = "Mensaje enviado";
+    setTimeout(() => status.textContent = `Canal ${currentChannel} libre`, 1000);
+  }
+
+  // Eventos táctiles + ratón + teclado
+  ptt.addEventListener('touchstart', startTransmit);
+  ptt.addEventListener('touchend', stopTransmit);
+  ptt.addEventListener('mousedown', startTransmit);
+  ptt.addEventListener('mouseup', stopTransmit);
+  ptt.addEventListener('mouseleave', stopTransmit);
+
+  // Tecla espacio (PC)
+  document.addEventListener('keydown', e => e.code === 'Space' && !e.repeat && startTransmit(e));
+  document.addEventListener('keyup', e => e.code === 'Space' && stopTransmit(e));
+
+  // Iniciar
+  subscribe("1");
+</script>
 </body>
 </html>
