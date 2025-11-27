@@ -3,67 +3,152 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Walkie Talkie PRO</title>
+  <title>WALKIE TACTICAL PRO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://js.pusher.com/8.2/pusher.min.js"></script> <!-- Pusher SDK -->
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap');
-    
+    /* Mismo CSS brutal de antes – no cambia */
+    :root {
+      --green: #00ff41;
+      --darkgreen: #003314;
+      --red: #ff0033;
+      --dark: #0a0e0a;
+      --darker: #000000;
+    }
+
+    * { box-sizing: border-box; }
     body {
-      margin: 0; padding: 0; background: #000; color: #0f0; font-family: 'Courier New', monospace;
-      overflow: hidden; height: 100vh; display: flex; flex-direction: column;
-      background: linear-gradient(135deg, #001a00, #000);
+      margin: 0; padding: 0; height: 100vh; background: var(--darker);
+      color: var(--green); font-family: 'Rajdhani', sans-serif;
+      overflow: hidden; display: flex; flex-direction: column;
+      background: radial-gradient(circle at center, #001a0a 0%, #000 70%);
     }
+
     #header {
-      text-align: center; padding: 20px; font-family: 'Orbitron', sans-serif;
-      font-size: 32px; text-shadow: 0 0 20px #0f0; letter-spacing: 3px;
+      text-align: center; padding: 20px 0 10px;
+      font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900;
+      background: linear-gradient(90deg, transparent, rgba(0,255,65,0.2), transparent);
+      text-shadow: 0 0 30px var(--green), 0 0 60px var(--green);
+      letter-spacing: 8px; animation: glitch 4s infinite;
     }
+
+    @keyframes glitch {
+      0%,100% { text-shadow: 0 0 30px var(--green); }
+      2% { text-shadow: 3px 0 0 #f00, -3px 0 0 #0ff; }
+      4% { text-shadow: -3px 0 0 #f00, 3px 0 0 #0ff; }
+    }
+
+    .scanline {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(transparent 50%, rgba(0,255,65,0.03) 50%);
+      background-size: 100% 4px; pointer-events: none; animation: scan 8s linear infinite;
+      z-index: 999;
+    }
+    @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+
     #channelBox {
-      text-align: center; margin: 10px;
+      text-align: center; margin: 15px 0; z-index: 10;
     }
     #channelInput {
-      width: 120px; height: 50px; font-size: 28px; text-align: center;
-      background: #000; color: #0f0; border: 3px solid #0f0; border-radius: 15px;
-      box-shadow: 0 0 20px #0f0;
+      width: 140px; height: 60px; font-size: 36px; font-weight: bold;
+      text-align: center; background: rgba(0,0,0,0.8); color: var(--green);
+      border: 3px solid var(--green); border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,255,65,0.6), inset 0 0 20px rgba(0,0,0,0.8);
+      text-shadow: 0 0 10px var(--green);
     }
+    #joinBtn {
+      margin-left: 15px; padding: 15px 30px; font-size: 20px; font-weight: bold;
+      background: linear-gradient(145deg, #003300, #00ff41);
+      color: black; border: none; border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,255,65,0.8);
+      cursor: pointer; transition: all 0.2s;
+    }
+    #joinBtn:active { transform: scale(0.95); }
+
     #ptt {
-      width: 280px; height: 280px; margin: 30px auto; border-radius: 50%;
-      background: radial-gradient(circle, #003300, #000);
-      border: 12px solid #0f0; box-shadow: 0 0 60px #0f0, inset 0 0 40px #003300;
-      display: flex; align-items: center; justify-content: center; font-size: 28px;
-      font-weight: bold; text-align: center; user-select: none; transition: all 0.1s;
+      width: 300px; height: 300px; margin: 40px auto; border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #004400, #000811);
+      border: 14px solid var(--green);
+      box-shadow: 
+        0 0 80px rgba(0,255,65,0.8),
+        0 0 140px rgba(0,255,65,0.4),
+        inset 0 0 60px rgba(0,0,0,0.9);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: bold; text-align: center;
+      user-select: none; cursor: pointer; position: relative; overflow: hidden;
+      transition: all 0.15s;
     }
-    .talking { background: radial-gradient(circle, #330000, #000) !important; 
-               border-color: #f00 !important; box-shadow: 0 0 80px #f00, inset 0 0 60px #600 !important; }
+
+    #ptt::before {
+      content: ''; position: absolute; width: 100%; height: 100%;
+      background: conic-gradient(from 0deg at 50% 50%, transparent 0deg, rgba(0,255,65,0.1) 30deg, transparent 60deg);
+      animation: radar 20s linear infinite; opacity: 0.3;
+    }
+    @keyframes radar { to { transform: rotate(360deg); } }
+
+    .talking {
+      background: radial-gradient(circle at 30% 30%, #440000, #110000) !important;
+      border-color: var(--red) !important;
+      box-shadow: 
+        0 0 120px rgba(255,0,51,1),
+        0 0 200px rgba(255,0,51,0.6),
+        inset 0 0 80px rgba(100,0,0,0.9) !important;
+      animation: pulseRed 1s infinite alternate;
+    }
+    @keyframes pulseRed { from { box-shadow: 0 0 120px rgba(255,0,51,1); } to { box-shadow: 0 0 180px rgba(255,0,51,1); } }
+
     #status {
-      text-align: center; font-size: 20px; margin: 20px; text-shadow: 0 0 10px #0f0;
+      text-align: center; font-size: 26px; font-weight: bold; margin: 20px;
+      text-shadow: 0 0 20px var(--green); letter-spacing: 2px;
     }
-    #users { text-align: center; color: #0f0; font-size: 14px; }
-    .pulse { animation: pulse 1.5s infinite; }
+    #users {
+      text-align: center; font-size: 18px; opacity: 0.9;
+    }
+
+    .indicator {
+      display: inline-block; width: 18px; height: 18px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 20px var(--green); animation: pulse 2s infinite;
+    }
+    .tx { background: #ff0033 !important; box-shadow: 0 0 30px #ff0033 !important; animation: pulse 0.5s infinite !important; }
+
     @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+    footer {
+      position: absolute; bottom: 10px; width: 100%; text-align: center;
+      font-size: 12px; opacity: 0.4; letter-spacing: 3px;
+    }
   </style>
 </head>
 <body>
 
-  <div id="header">WALKIE PRO</div>
+  <div class="scanline"></div>
+
+  <div id="header">TACTICAL COMM</div>
 
   <div id="channelBox">
-    <label>CANAL: </label>
+    <label style="font-size:22px; text-shadow:0 0 10px;">FRECUENCIA</label><br>
     <input type="number" id="channelInput" min="1" max="999" value="13"/>
-    <button onclick="joinChannel()" style="margin-left:10px;padding:10px 20px;font-size:18px;background:#0f0;color:#000;border:none;border-radius:10px;">
-      UNIRSE
-    </button>
+    <button id="joinBtn" onclick="joinChannel()">CONECTAR</button>
   </div>
 
   <div id="ptt" ontouchstart="startTalking(event)" ontouchend="stopTalking()" 
        onmousedown="startTalking(event)" onmouseup="stopTalking()" onmouseleave="stopTalking()">
-    PRESIONA Y HABLA<br><span style="font-size:18px;">Canal <span id="currentChannel">?</span></span>
+    <div style="font-size:52px; text-shadow:0 0 30px;">PTT</div>
+    <div style="font-size:20px; margin-top:10px;">CANAL <span id="currentChannel">13</span></div>
   </div>
 
-  <div id="status">Conectando al canal...</div>
-  <div id="users">Usuarios en línea: <span id="userCount">0</span></div>
+  <div id="status"><span class="indicator" id="led"></span> CONECTANDO...</div>
+  <div id="users">OPERADORES EN RED: <span id="userCount">0</span></div>
+
+  <footer>WALKIE TACTICAL PRO • 2025 • PUSH-2-TALK UPGRADED</footer>
 
   <script>
-    const SERVER_URL = "https://ruminot21.github.io/Radio-walkie-talkie-/"; // Servidor público gratuito (siempre activo)
-    let socket = null;
+    // Configura PUSHER con TUS VALORES
+    const APP_ID = '2083771';  // Ej: 1234567
+    const KEY = 'fc0eb734d53f2df68607';        // Ej: abc123def456
+    const CLUSTER = 'us2'; // Ej: us2
+
+    let pusher = null;
     let channel = 13;
     let myId = Math.random().toString(36).substr(2,9);
     let isTalking = false;
@@ -71,76 +156,79 @@
     let mediaStream = null;
     let sourceNode = null;
     let processor = null;
-    let peers = {};
+    let userCount = 0;
 
     document.getElementById('currentChannel').innerText = channel;
 
     function joinChannel() {
       channel = parseInt(document.getElementById('channelInput').value) || 13;
-      if (channel < 1) channel = 1;
-      if (channel > 999) channel = 999;
+      if (channel < 1) channel = 1; if (channel > 999) channel = 999;
       document.getElementById('currentChannel').innerText = channel;
-      document.getElementById('status').innerText = `Uniéndote al canal ${channel}...`;
-      connectWebSocket();
+      document.getElementById('status').innerHTML = `<span class="indicator"></span> CONECTANDO A ${channel}...`;
+      connectPusher();
     }
 
-    function connectWebSocket() {
-      if (socket) socket.close();
-      socket = new WebSocket(SERVER_URL);
+    function connectPusher() {
+      Pusher.logToConsole = false;
+      pusher = new Pusher(KEY, { 
+        cluster: CLUSTER, 
+        forceTLS: true,
+        authEndpoint: `https://YOUR_APP_ID.pusherapp.com/presence/auth` // No necesitas auth para channels públicos
+      });
 
-      socket.onopen = () => {
-        socket.send(JSON.stringify({type: "join", channel, id: myId}));
-        document.getElementById('status').innerHTML = `<span class="pulse">● Canal ${channel} - CONECTADO</span>`;
-      };
+      const chName = `presence-walkie-${channel}`;
+      const channelObj = pusher.subscribe(chName);
 
-      socket.onmessage = (event) => {
-        const msg = JSON.parse(event.data);
-        if (msg.type === "users") {
-          document.getElementById('userCount').innerText = msg.count;
-        }
-        if (msg.type === "audio" && msg.id !== myId) {
-          playAudio(msg.data);
-        }
-      };
+      channelObj.bind('pusher:subscription_succeeded', (members) => {
+        userCount = members.count;
+        document.getElementById('userCount').innerText = userCount;
+        document.getElementById('status').innerHTML = `<span class="indicator"></span> CANAL \( {channel} ● ONLINE ( \){userCount})`;
+        // Escucha audio de otros
+        channelObj.bind('audio', (data) => {
+          if (data.id !== myId) playAudio(data.audioData);
+        });
+      });
 
-      socket.onclose = () => {
-        document.getElementById('status').innerText = "Desconectado. Reconectando...";
-        setTimeout(connectWebSocket, 2000);
-      };
+      channelObj.bind('pusher:member_added', (member) => {
+        userCount++;
+        document.getElementById('userCount').innerText = userCount;
+      });
+
+      channelObj.bind('pusher:member_removed', (member) => {
+        userCount--;
+        document.getElementById('userCount').innerText = userCount;
+      });
     }
 
     async function startTalking(e) {
       e.preventDefault();
       if (isTalking) return;
       isTalking = true;
-      document.getElementById('ptt').classList.add('talking');
-      document.getElementById('ptt').innerHTML = "¡HABLANDO!<br><span style='font-size:20px'>Suelta para parar</span>";
-      document.getElementById('status').innerHTML = "● TRANSMITIENDO...";
+      const ptt = document.getElementById('ptt');
+      ptt.classList.add('talking');
+      ptt.innerHTML = `<div style="font-size:48px;">TX</div><div style="font-size:22px; margin-top:10px;">TRANSMITIENDO</div>`;
+      document.getElementById('status').innerHTML = `<span class="indicator tx"></span> ● TRANSMITIENDO EN ${channel}`;
+      document.getElementById('led').classList.add('tx');
 
       try {
         mediaStream = await navigator.mediaDevices.getUserMedia({audio: true});
         sourceNode = audioContext.createMediaStreamSource(mediaStream);
         processor = audioContext.createScriptProcessor(2048, 1, 1);
-
         processor.onaudioprocess = (e) => {
           if (!isTalking) return;
           const input = e.inputBuffer.getChannelData(0);
           const bufferData = new Float32Array(input);
           const base64 = btoa(String.fromCharCode(...new Uint8Array(bufferData.buffer)));
-          if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({
-              type: "audio",
-              channel,
-              id: myId,
-              data: base64
-            }));
-          }
+          // Envía via Pusher
+          pusher.channel(`presence-walkie-${channel}`).trigger('client-audio', {
+            id: myId,
+            audioData: base64
+          });
         };
-
         sourceNode.connect(processor);
         processor.connect(audioContext.destination);
       } catch (err) {
-        alert("Necesitas permitir el micrófono");
+        alert("¡Permite el micrófono para transmitir!");
       }
     }
 
@@ -148,31 +236,20 @@
       if (!isTalking) return;
       isTalking = false;
       document.getElementById('ptt').classList.remove('talking');
-      document.getElementById('ptt').innerHTML = `PRESIONA Y HABLA<br><span style="font-size:18px;">Canal ${channel}</span>`;
-      document.getElementById('status').innerHTML = `<span class="pulse">● Canal ${channel} - ESCUCHANDO</span>`;
+      document.getElementById('ptt').innerHTML = `<div style="font-size:52px; text-shadow:0 0 30px;">PTT</div><div style="font-size:20px; margin-top:10px;">CANAL <span id="currentChannel">${channel}</span></div>`;
+      document.getElementById('status').innerHTML = `<span class="indicator"></span> CANAL \( {channel} ● ESCUCHANDO ( \){userCount})`;
+      document.getElementById('led').classList.remove('tx');
 
-      if (processor) {
-        processor.disconnect();
-        processor.onaudioprocess = null;
-        processor = null;
-      }
-      if (sourceNode) {
-        sourceNode.disconnect();
-        sourceNode = null;
-      }
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(t => t.stop());
-        mediaStream = null;
-      }
+      if (processor) { processor.disconnect(); processor.onaudioprocess = null; processor = null; }
+      if (sourceNode) { sourceNode.disconnect(); sourceNode = null; }
+      if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
     }
 
     function playAudio(base64) {
       try {
         const binary = atob(base64);
         const array = new Float32Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-          array[i] = (binary.charCodeAt(i) - 128) / 128;
-        }
+        for (let i = 0; i < binary.length; i++) array[i] = (binary.charCodeAt(i) - 128) / 128;
         const buffer = audioContext.createBuffer(1, array.length, 48000);
         buffer.getChannelData(0).set(array);
         const source = audioContext.createBufferSource();
@@ -182,7 +259,6 @@
       } catch(e) {}
     }
 
-    // Auto-conectar al cargar
     window.onload = () => joinChannel();
   </script>
 </body>
